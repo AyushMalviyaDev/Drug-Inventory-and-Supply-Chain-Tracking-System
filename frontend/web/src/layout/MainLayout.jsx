@@ -1,12 +1,21 @@
-import React from 'react'
-import { Outlet } from 'react-router-dom'
+import Sidebar from "../components/Sidebar";
+import { Outlet } from "react-router-dom";
+import { Suspense } from "react";
+import Loader from "../components/Loader";
 
-function MainLayout() {
+export default function MainLayout() {
   return (
-    <> 
-      <Outlet />
-    </>
-  ); 
-}; 
+    <div className="h-screen flex bg-[#F8FAFC] text-[#111827]">
+      
+      <Sidebar />
 
-export default MainLayout
+      {/* Only this scrolls */}
+      <main className="flex-1 overflow-y-auto">
+        <Suspense fallback={<Loader />}>
+          <Outlet />
+        </Suspense>
+      </main>
+
+    </div>
+  );
+}

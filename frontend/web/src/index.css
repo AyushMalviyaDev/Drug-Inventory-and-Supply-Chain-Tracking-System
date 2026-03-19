@@ -1,1 +1,25 @@
 @import "tailwindcss";
+body {
+  font-family: 'Inter', serif;
+}
+
+/* Scrollbar width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #0B1120; /* Primary background */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #1E293B; /* Secondary panel */
+  border-radius: 8px;
+}
+
+/* Handle hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #3B82F6; /* Accent */
+}                       
