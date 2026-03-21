@@ -43,21 +43,45 @@ class UserProfileSerializer(serializers.ModelSerializer):
     fields = ['id', 'email', 'name']    
 
 class UserChangePasswordSerializer(serializers.Serializer):
-  password = serializers.CharField(max_length=255, style={'input_type':'password'}, write_only=True)
-  password2 = serializers.CharField(max_length=255, style={'input_type':'password'}, write_only=True)
-  class Meta:
-    fields = ['password', 'password2']  
-  
+    old_password = serializers.CharField(
+        max_length=255,
+        style={'input_type': 'password'},
+        write_only=True
+    )
+    password = serializers.CharField(
+        max_length=255,
+        style={'input_type': 'password'},
+        write_only=True
+    )
+    password2 = serializers.CharField(
+        max_length=255,
+        style={'input_type': 'password'},
+        write_only=True
+    )
 
-  def validate(self, attrs):
-    password = attrs.get('password')
-    password2 = attrs.get('password2')
-    user = self.context.get('user')
-    if password != password2:
-      raise serializers.ValidationError("Password and Confirm Password doesn't match")
-    user.set_password(password)
-    user.save()
-    return super().validate(attrs)
+    class Meta:
+        fields = ['old_password', 'password', 'password2']
+
+    def validate(self, attrs):
+        user = self.context.get('user')
+
+        # ✅ check old password
+        if not user.check_password(attrs['old_password']):
+            raise serializers.ValidationError("Old password is incorrect")
+
+        # ✅ check password match
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError("Passwords do not match")
+
+        return attrs
+
+    def save(self, **kwargs):
+        user = self.context.get('user')
+        user.set_password(self.validated_data['password'])
+        user.save()
+        return user
+
+ 
 
 class SendPasswordResetEmailSerializer(serializers.Serializer):
   email = serializers.EmailField(max_length=255)

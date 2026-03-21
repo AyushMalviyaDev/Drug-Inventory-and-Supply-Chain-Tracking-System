@@ -4,6 +4,9 @@ import MainLayout from "./layout/MainLayout";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";  
+import ProtectedRoute from "./components/ProtectedRoute";
+import ChangePassword from "./pages/ChangePassword";
+
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Landing = lazy(() => import("./pages/Landing"));
@@ -20,17 +23,17 @@ function App() {
 
       <Route path="/" element={<Landing />} /> 
       <Route path="/register" element={<Register />} /> 
-        <Route path="/login" element={<Login />} />  
+        <Route path="/login" element={<Login/>} />  
         <Route path="/resetpassword" element={<ResetPassword />} />
 
       <Route element={<MainLayout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/orders" element={<Orders />} />
-        <Route path="/distribution" element={<Distribution />} />
-        <Route path="/inventory" element={<Inventory />} />
-        <Route path="/reports" element={<Reports />} />
-        <Route path="/settings" element={<Settings />} />
-       
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+        <Route path="/distribution" element={<ProtectedRoute><Distribution /></ProtectedRoute>} />
+        <Route path="/inventory" element={<ProtectedRoute><Inventory /></ProtectedRoute>} />
+        <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+        <Route path="/changepassword" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
 
       </Route>
 

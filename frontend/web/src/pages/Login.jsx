@@ -1,104 +1,95 @@
-  import React, { useState } from "react";
+import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-function Login() {
+export default function Login() {
+  const navigate = useNavigate();
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState(null);
+  const [form, setForm] = useState({
+    email: "",
+    password: ""
+  });
+
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
-    const response = await fetch("http://localhost:8000/login/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        username,
-        password
-      })
-    });
+    try {
+      const res = await axios.post(
+  "http://127.0.0.1:8000/api/user/login/",
+  form
+);
 
-    const data = await response.json();
+// 🔐 Store both tokens
+localStorage.setItem("access", res.data.access);
+localStorage.setItem("refresh", res.data.refresh);
 
-    if (data.error) {
-      setMessage({ type: "error", text: data.error });
-    } else {
-      setMessage({ type: "success", text: "Login successful" });
+// 🔥 Redirect
+navigate("/dashboard");
+
+    } catch (err) {
+      setError("Invalid email or password");
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center px-4">
+      
+      <div className="w-full max-w-md bg-white border border-[#E5E7EB] rounded-2xl shadow-sm p-8">
+        
+        <h2 className="text-2xl font-bold text-[#111827] text-center mb-6">
+          Welcome Back 👋
+        </h2>
 
-      <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-md">
-
-        <h1 className="text-2xl font-bold text-center mb-6">
-          Login
-        </h1>
-
-        {message && (
-          <p
-            className={`text-center mb-4 ${
-              message.type === "error" ? "text-red-600" : "text-green-600"
-            }`}
-          >
-            {message.text}
-          </p>
+        {error && (
+          <p className="text-red-500 text-sm mb-4 text-center">{error}</p>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
 
           <input
-            type="text"
-            placeholder="Username"
-            required
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            type="email"
+            name="email"
+            placeholder="Email"
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22C55E]"
           />
 
           <input
             type="password"
+            name="password"
             placeholder="Password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22C55E]"
           />
 
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition"
+            className="w-full bg-[#22C55E] text-white py-2 rounded-lg font-semibold hover:opacity-90 transition"
           >
             Login
           </button>
-
         </form>
 
-        <div className="text-center text-sm mt-6 space-y-2">
-
-          <p>
-            Not a member?{" "}
-            <a href="/register" className="text-blue-500 hover:underline">
-              Signup
-            </a>
-          </p>
-
-          <p>
-            Forgot your password?{" "}
-            <a href="/forgot-password" className="text-blue-500 hover:underline">
-              Reset Password
-            </a>
-          </p>
-
-        </div>
-
+        <p className="text-sm text-[#6B7280] text-center mt-6">
+          Don’t have an account?{" "}
+          <span
+            onClick={() => navigate("/register")}
+            className="text-[#22C55E] font-medium cursor-pointer"
+          >
+            Register
+          </span>
+        </p>
       </div>
-
     </div>
   );
 }
-
-export default Login;
