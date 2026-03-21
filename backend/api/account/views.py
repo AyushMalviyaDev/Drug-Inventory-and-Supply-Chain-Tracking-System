@@ -1,12 +1,15 @@
+from time import timezone
+
 from rest_framework.response import Response    
 from rest_framework.views import APIView
 from rest_framework import status
 from django.contrib.auth import authenticate
+from account.models import User
 from account.renderers import UserRenderer
 from account.serializers import SendPasswordResetEmailSerializer, UserChangePasswordSerializer, UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer, UserPasswordResetSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-
+from .utils import generate_otp, send_otp
 
 # generates token manually for a user
 def get_tokens_for_user(user):
@@ -22,29 +25,48 @@ class UserRegistrationView(APIView):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.save()
-            tokens = get_tokens_for_user(user)
-            return Response({"tokens": tokens, "message": "User registered successfully"}, status=status.HTTP_201_CREATED)    
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+
+            # 🔐 Generate OTP
+            otp = generate_otp()
+            user.email_otp = otp
+            user.otp_created_at = timezone.now()
+            user.is_verified = False
+            user.save()
+              # Debugging line to check OTP generation
+            send_otp(user.email, otp)
+
+            return Response({
+                "message": "OTP sent to your email. Please verify."
+            }, status=status.HTTP_201_CREATED)
     
 class UserLoginView(APIView):
     renderer_classes = [UserRenderer]
-    def post(self, request,format=None):
+
+    def post(self, request, format=None):
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             email = serializer.validated_data.get('email')  
             password = serializer.validated_data.get('password')
-            user = authenticate(request,  email=email, password=password)
+            user = authenticate(request, email=email, password=password)
+
             if user is not None:
-                tokens =  get_tokens_for_user(user)
-                return Response({"tokens": tokens, "message": "User logged in successfully"}, status=status.HTTP_200_OK)  
-            else: 
-                return Response({"error": {'non_field_errors': ['Invalid email or password']}}, status=status.HTTP_404_NOT_FOUND)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                if not user.is_verified and not user.is_admin:
+                        return Response(
+                            {"error": "Please verify your email first"},
+                            status=status.HTTP_403_FORBIDDEN
+                        )
 
+                tokens = get_tokens_for_user(user)
+                return Response({
+                    "tokens": tokens,
+                    "message": "User logged in successfully"
+                }, status=status.HTTP_200_OK)
 
-          
-      
+            # ✅ Handle invalid credentials
+            return Response(
+                {"error": "Invalid email or password"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
 class UserProfileView(APIView):
     renderer_classes = [UserRenderer]
     permission_classes = [IsAuthenticated]
@@ -110,3 +132,33 @@ class UserPasswordResetView(APIView):
 
               return Response({"message": "Password reset successfully"}, status=status.HTTP_200_OK)
        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+from datetime import timedelta
+from django.utils import timezone
+
+class VerifyOTPView(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        otp = request.data.get('otp')
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=404)
+
+        # ❌ Wrong OTP
+        if user.email_otp != otp:
+            return Response({"error": "Invalid OTP"}, status=400)
+
+        # ⏱ Expiry check
+        if timezone.now() > user.otp_created_at + timedelta(minutes=5):
+            return Response({"error": "OTP expired"}, status=400)
+
+        # ✅ Verify user
+        user.is_verified = True
+        user.email_otp = None
+        user.save()
+
+        return Response({"message": "Email verified successfully"})    

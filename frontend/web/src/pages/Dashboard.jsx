@@ -19,12 +19,6 @@ export default function Dashboard() {
           Dashboard
         </h1>
 
-        <button
-          onClick={handleLogout}
-          className="bg-[#22C55E] text-white px-4 py-2 rounded-lg hover:opacity-90"
-        >
-          Logout
-        </button>
       </div>
 
       {/* Stats Cards */}

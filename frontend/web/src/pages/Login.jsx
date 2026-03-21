@@ -11,6 +11,7 @@ export default function Login() {
   });
 
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // optional for UX
 
   const handleChange = (e) => {
     setForm({
@@ -22,30 +23,38 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
       const res = await axios.post(
-  "http://127.0.0.1:8000/api/user/login/",
-  form
-);
+        "http://127.0.0.1:8000/api/user/login/",
+        form
+      );
 
-// 🔐 Store both tokens
-localStorage.setItem("access", res.data.access);
-localStorage.setItem("refresh", res.data.refresh);
-
-// 🔥 Redirect
-navigate("/dashboard");
+      // 🔐 Store tokens if login succeeds
+      if (res.data.tokens) {
+        localStorage.setItem("access", res.data.tokens.access);
+        localStorage.setItem("refresh", res.data.tokens.refresh);
+        navigate("/dashboard");
+      }
 
     } catch (err) {
-      setError("Invalid email or password");
+      // Handle unverified email (403)
+      if (err.response && err.response.status === 403) {
+        setError(err.response.data.error || "Please verify your email first");
+        // Redirect to Verify OTP page with email prefilled
+        navigate("/verify", { state: { email: form.email } });
+      } else {
+        setError("Invalid email or password");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center px-4">
-      
       <div className="w-full max-w-md bg-white border border-[#E5E7EB] rounded-2xl shadow-sm p-8">
-        
         <h2 className="text-2xl font-bold text-[#111827] text-center mb-6">
           Welcome Back 👋
         </h2>
@@ -55,11 +64,11 @@ navigate("/dashboard");
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-
           <input
             type="email"
             name="email"
             placeholder="Email"
+            value={form.email}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22C55E]"
           />
@@ -68,15 +77,17 @@ navigate("/dashboard");
             type="password"
             name="password"
             placeholder="Password"
+            value={form.password}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22C55E]"
           />
 
           <button
             type="submit"
-            className="w-full bg-[#22C55E] text-white py-2 rounded-lg font-semibold hover:opacity-90 transition"
+            disabled={loading}
+            className="w-full bg-[#22C55E] text-white py-2 rounded-lg font-semibold hover:opacity-90 transition disabled:opacity-50"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 

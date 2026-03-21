@@ -16,6 +16,11 @@ import {
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const handleLogout = () => {
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    navigate("/login");
+  };
 
   const menuItems = [
     { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
@@ -103,36 +108,43 @@ export default function Sidebar() {
       </div>
 
       {/* Bottom Section */}
-      <div className="mb-6 px-3 space-y-2">
-        {[
-          { name: "Contact & Help", icon: HelpCircle },
-          { name: "Logout", icon: LogOut },
-        ].map((item) => {
-          const Icon = item.icon;
+     {/* Bottom Section */}
+<div className="mb-6 px-3 space-y-2">
+  {[
+    { name: "Contact & Help", icon: HelpCircle, onClick: () => alert("Open Help/Contact page") },
+    { name: "Logout", icon: LogOut, onClick: () => {
+        localStorage.clear();          // clear tokens
+        window.location.href = "/login"; // redirect to login
+      }
+    },
+  ].map((item) => {
+    const Icon = item.icon;
 
-          return (
-            <div
-              key={item.name}
-              className="group relative flex items-center gap-4 px-4 py-3 rounded-xl cursor-pointer
-              text-[#6B7280] hover:bg-[#F8FAFC] hover:text-[#111827] transition"
-            >
-              <Icon
-                size={20}
-                className="text-[#6B7280] group-hover:text-[#22C55E] transition"
-              />
+    return (
+      <button
+        key={item.name}
+        onClick={item.onClick}
+        className="group relative flex items-center gap-4 px-4 py-3 rounded-xl cursor-pointer
+                   text-[#6B7280] hover:bg-[#F8FAFC] hover:text-[#111827] transition w-full text-left"
+      >
+        <Icon
+          size={20}
+          className="text-[#6B7280] group-hover:text-[#22C55E] transition"
+        />
 
-              {!isCollapsed && (
-                <span className="text-sm font-medium">
-                  {item.name}
-                </span>
-              )}
+        {!isCollapsed && (
+          <span className="text-sm font-medium">
+            {item.name}
+          </span>
+        )}
 
-              {isCollapsed && (
-                <span className="absolute left-16 bg-white text-[#111827] text-xs px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap border border-[#E5E7EB] shadow-lg">
-                  {item.name}
-                </span>
-              )}
-            </div>
+        {isCollapsed && (
+          <span className="absolute left-16 bg-white text-[#111827] text-xs px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap border border-[#E5E7EB] shadow-lg">
+            {item.name}
+          </span>
+        )}
+      </button>
+    
           );
         })}
       </div>

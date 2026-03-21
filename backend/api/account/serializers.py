@@ -10,26 +10,64 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from account.utils import Util
 
 
+from rest_framework import serializers
+from django.utils import timezone
+from .models import User
+from .utils import generate_otp, send_otp
+
 class UserRegistrationSerializer(serializers.ModelSerializer):
-  # We are writing this becoz we need confirm password field in our Registratin Request
-  password2 = serializers.CharField(style={'input_type':'password'}, write_only=True)
-  class Meta:
-    model = User
-    fields=['email', 'name', 'password', 'password2', 'tc']
-    extra_kwargs={
-      'password':{'write_only':True}
-    }
+    class Meta:
+        model = User
+        fields = ['email', 'name', 'password', 'tc']
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
 
-  # Validating Password and Confirm Password while Registration
-  def validate(self, attrs):
-    password = attrs.get('password')
-    password2 = attrs.get('password2')
-    if password != password2:
-      raise serializers.ValidationError("Password and Confirm Password doesn't match")
-    return attrs
+    def create(self, validated_data):
+        otp = generate_otp()
 
-  def create(self, validate_data):
-    return User.objects.create_user(**validate_data)
+        user = User.objects.create_user(
+            email=validated_data['email'],
+            name=validated_data['name'],
+            password=validated_data['password'],
+            tc=validated_data['tc']
+        )
+
+        user.email_otp = otp
+        user.otp_created_at = timezone.now()
+        user.is_verified = False
+        user.save()
+
+
+        return user
+
+from datetime import timedelta
+
+class VerifyOTPSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.CharField(max_length=6)
+
+    def validate(self, data):
+        try:
+            user = User.objects.get(email=data['email'])
+        except User.DoesNotExist:
+            raise serializers.ValidationError("User not found")
+
+        # ❌ Wrong OTP
+        if user.email_otp != data['otp']:
+            raise serializers.ValidationError("Invalid OTP")
+
+        # ⏱ Expiry check
+        if timezone.now() > user.otp_created_at + timedelta(minutes=5):
+            raise serializers.ValidationError("OTP expired")
+
+        # ✅ Verify user
+        user.is_verified = True
+        user.email_otp = None
+        user.save()
+
+        return data        
+
 
 class UserLoginSerializer(serializers.ModelSerializer):
   email = serializers.EmailField(max_length=255)

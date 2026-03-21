@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const navigate = useNavigate();
+  
 
   const [form, setForm] = useState({
     email: "",
@@ -23,23 +24,30 @@ export default function Register() {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+  const [loading, setLoading] = useState(false);
 
-    try {
-      await axios.post(
-        "http://127.0.0.1:8000/api/user/register/",
-        form
-      );
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-      // 🔥 redirect to dashboard
-      navigate("/dashboard");
+  if (loading) return; // prevent double click
+  setLoading(true);
 
-    } catch (err) {
-      setError("Registration failed. Check inputs.");
-    }
-  };
+  try {
+    await axios.post(
+      "http://127.0.0.1:8000/api/user/register/",
+      form
+    );
+
+    localStorage.setItem("email", form.email);
+
+    navigate("/verify", { state: { email: form.email } });
+
+  } catch (err) {
+    setError(err.response?.data?.message || "Registration failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center px-4">
@@ -92,12 +100,13 @@ export default function Register() {
             <input type="checkbox" name="tc" onChange={handleChange} />
             Accept Terms & Conditions
           </label>
-
+        
           <button
+            disabled={loading}
             type="submit"
             className="w-full bg-[#22C55E] text-white py-2 rounded-lg font-semibold hover:opacity-90 transition"
           >
-            Register
+            {loading ? "Loading..." : "Register"}
           </button>
         </form>
 
