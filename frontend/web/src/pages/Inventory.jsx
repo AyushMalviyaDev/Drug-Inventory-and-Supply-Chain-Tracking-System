@@ -37,8 +37,8 @@ export default function Inventory() {
           </p>
         </div>
 
-        <button className="bg-[#22C55E] hover:bg-[#16A34A] text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-          + Add Product
+        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+          + Add Product 
         </button>
       </div>
 
@@ -122,4 +122,4 @@ export default function Inventory() {
 
     </div>
   );
-}
+} 

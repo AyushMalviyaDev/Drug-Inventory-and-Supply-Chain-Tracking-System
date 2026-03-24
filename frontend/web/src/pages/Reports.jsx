@@ -37,7 +37,7 @@ export default function Reports() {
           </p>
         </div>
 
-        <button className="bg-[#22C55E] hover:bg-[#16A34A] text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
           Export Report
         </button>
       </div>
@@ -52,7 +52,7 @@ export default function Reports() {
           type="date"
           className="bg-[#FFFFFF] text-[#6B7280] px-3 py-2 rounded-lg border border-[#E5E7EB]"
         />
-        <button className="bg-[#22C55E] hover:bg-[#16A34A] text-white px-4 py-2 rounded-lg text-sm">
+        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm">
           Filter
         </button>
       </div>

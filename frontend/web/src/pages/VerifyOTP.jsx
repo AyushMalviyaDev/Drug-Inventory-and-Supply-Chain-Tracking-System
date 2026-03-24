@@ -49,7 +49,7 @@ export default function VerifyOTP() {
     });
   };
 
-  // ✅ Submit OTP
+  
   const handleVerify = async (e) => {
     e.preventDefault();
     setError("");
@@ -107,14 +107,14 @@ export default function VerifyOTP() {
                   handleChange(e.target.value, index)
                 }
                 onKeyDown={(e) => handleKeyDown(e, index)}
-                className="w-12 h-12 text-center text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22C55E]"
+                className="w-12 h-12 text-center text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             ))}
           </div>
 
           <button
             type="submit"
-            className="w-full bg-[#22C55E] text-white py-2 rounded-lg font-semibold hover:opacity-90 transition"
+            className="w-full bg-indigo-600 text-white py-2 rounded-lg font-semibold hover:opacity-90 transition"
           >
             Verify
           </button>
@@ -122,7 +122,7 @@ export default function VerifyOTP() {
 
         <p className="text-sm text-center mt-6 text-gray-500">
           Didn’t receive OTP?{" "}
-          <span className="text-[#22C55E] cursor-pointer">
+          <span className="text-indigo-600 cursor-pointer">
             Resend
           </span>
         </p>

@@ -52,7 +52,7 @@ export default function Settings() {
           <button
             onClick={() => setNotifications(!notifications)}
             className={`w-12 h-6 flex items-center rounded-full p-1 transition ${
-              notifications ? "bg-[#22C55E]" : "bg-[#E5E7EB]"
+              notifications ? "bg-indigo-600" : "bg-indigo-300"
             }`}
           >
             <div
@@ -68,7 +68,7 @@ export default function Settings() {
           <button
             onClick={() => setDarkMode(!darkMode)}
             className={`w-12 h-6 flex items-center rounded-full p-1 transition ${
-              darkMode ? "bg-[#22C55E]" : "bg-[#E5E7EB]"
+              darkMode ? "bg-indigo-600" : "bg-indigo-300"
             }`}
           >
             <div
@@ -82,7 +82,7 @@ export default function Settings() {
 
       {/* Save Button */}
       <div className="flex justify-end">
-        <button className="bg-[#22C55E] hover:bg-[#16A34A] text-white px-6 py-2 rounded-lg text-sm font-medium transition">
+        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition">
           Save Changes
         </button>
       </div>

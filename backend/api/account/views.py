@@ -10,6 +10,8 @@ from account.serializers import SendPasswordResetEmailSerializer, UserChangePass
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from .utils import generate_otp, send_otp
+#from django.conf import settings
+#from google.oauth2 import id_token
 
 # generates token manually for a user
 def get_tokens_for_user(user):
@@ -26,7 +28,6 @@ class UserRegistrationView(APIView):
         if serializer.is_valid(raise_exception=True):
             user = serializer.save()
 
-            # 🔐 Generate OTP
             otp = generate_otp()
             user.email_otp = otp
             user.otp_created_at = timezone.now()

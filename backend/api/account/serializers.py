@@ -53,15 +53,15 @@ class VerifyOTPSerializer(serializers.Serializer):
         except User.DoesNotExist:
             raise serializers.ValidationError("User not found")
 
-        # ❌ Wrong OTP
+        
         if user.email_otp != data['otp']:
             raise serializers.ValidationError("Invalid OTP")
 
-        # ⏱ Expiry check
+        
         if timezone.now() > user.otp_created_at + timedelta(minutes=5):
             raise serializers.ValidationError("OTP expired")
 
-        # ✅ Verify user
+
         user.is_verified = True
         user.email_otp = None
         user.save()
@@ -103,11 +103,11 @@ class UserChangePasswordSerializer(serializers.Serializer):
     def validate(self, attrs):
         user = self.context.get('user')
 
-        # ✅ check old password
+        
         if not user.check_password(attrs['old_password']):
             raise serializers.ValidationError("Old password is incorrect")
 
-        # ✅ check password match
+        
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError("Passwords do not match")
 

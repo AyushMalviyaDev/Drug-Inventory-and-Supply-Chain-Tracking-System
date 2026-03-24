@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ export default function Register() {
 const handleSubmit = async (e) => {
   e.preventDefault();
 
-  if (loading) return; // prevent double click
+  if (loading) return;
   setLoading(true);
 
   try {
@@ -50,13 +51,22 @@ const handleSubmit = async (e) => {
 };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center px-4">
-      
-      <div className="w-full max-w-md bg-white border border-[#E5E7EB] rounded-2xl shadow-sm p-8">
-        
-        <h2 className="text-2xl font-bold text-[#111827] text-center mb-6">
-          Create Account
-        </h2>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-sm p-8"
+      >
+        {/* Heading */}
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-semibold text-gray-900">
+            Create account
+          </h2>
+          <p className="text-sm text-gray-500 mt-1">
+            Start your journey with us
+          </p>
+        </div>
 
         {error && (
           <p className="text-red-500 text-sm mb-4 text-center">{error}</p>
@@ -69,7 +79,7 @@ const handleSubmit = async (e) => {
             name="email"
             placeholder="Email"
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22C55E]"
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
 
           <input
@@ -77,7 +87,7 @@ const handleSubmit = async (e) => {
             name="name"
             placeholder="Full Name"
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22C55E]"
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
 
           <input
@@ -85,7 +95,7 @@ const handleSubmit = async (e) => {
             name="password"
             placeholder="Password"
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22C55E]"
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
 
           <input
@@ -93,10 +103,10 @@ const handleSubmit = async (e) => {
             name="password2"
             placeholder="Confirm Password"
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22C55E]"
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
 
-          <label className="flex items-center gap-2 text-sm text-[#6B7280]">
+          <label className="flex items-center gap-2 text-sm text-gray-600">
             <input type="checkbox" name="tc" onChange={handleChange} />
             Accept Terms & Conditions
           </label>
@@ -104,22 +114,22 @@ const handleSubmit = async (e) => {
           <button
             disabled={loading}
             type="submit"
-            className="w-full bg-[#22C55E] text-white py-2 rounded-lg font-semibold hover:opacity-90 transition"
+            className="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-medium hover:bg-indigo-700 transition disabled:opacity-50"
           >
-            {loading ? "Loading..." : "Register"}
+            {loading ? "Creating account..." : "Sign up"}
           </button>
         </form>
 
-        <p className="text-sm text-[#6B7280] text-center mt-6">
+        <p className="text-sm text-gray-500 text-center mt-6">
           Already have an account?{" "}
           <span
             onClick={() => navigate("/login")}
-            className="text-[#22C55E] font-medium cursor-pointer"
+            className="text-indigo-600 font-medium cursor-pointer hover:underline"
           >
-            Login
+            Sign in
           </span>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }

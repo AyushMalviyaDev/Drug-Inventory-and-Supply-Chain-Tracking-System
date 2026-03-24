@@ -28,13 +28,13 @@ function App() {
         <Route path="/resetpassword" element={<ResetPassword />} />
         <Route path="/verify" element={<VerifyOTP />} />
       <Route element={<MainLayout />}>
-        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
-        <Route path="/distribution" element={<ProtectedRoute><Distribution /></ProtectedRoute>} />
-        <Route path="/inventory" element={<ProtectedRoute><Inventory /></ProtectedRoute>} />
-        <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
-        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-        <Route path="/changepassword" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/orders" element={<Orders />} />
+        <Route path="/distribution" element={<Distribution />} />
+        <Route path="/inventory" element={<Inventory />} />
+        <Route path="/reports" element={<Reports />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/changepassword" element={<ChangePassword />} />
 
       </Route>
 
