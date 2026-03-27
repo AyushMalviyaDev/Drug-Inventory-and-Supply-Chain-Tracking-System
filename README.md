@@ -1,2 +1,7 @@
-# PharmaLink
-Drug Inventory and supply chain Tracking system.
+# Drug Inventory & Supply Chain Tracking System
+
+## Objective
+Manage drug inventory and track supply chain efficiently.
+
+## Tech Stack
+React, Django, PostgreSQL
