@@ -119,7 +119,6 @@ export default function Inventory() {
           </tbody>
         </table>
       </div>
-
     </div>
   );
 } 
