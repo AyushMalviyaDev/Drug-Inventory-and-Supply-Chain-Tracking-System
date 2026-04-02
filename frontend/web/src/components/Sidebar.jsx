@@ -38,8 +38,8 @@ export default function Sidebar() {
           {!isCollapsed && (
             <Link to="/dashboard">
               <div className="text-xl font-semibold tracking-tight">
-                <span className="text-gray-900">Pharma</span>
-                <span className="text-indigo-600">Link</span>
+                <span className="text-gray-900">D</span>
+                <span className="text-indigo-600">IASCTS</span>
               </div>
             </Link>
           )}
