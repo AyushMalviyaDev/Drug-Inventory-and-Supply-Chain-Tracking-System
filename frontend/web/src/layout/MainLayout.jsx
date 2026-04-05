@@ -11,9 +11,9 @@ export default function MainLayout() {
 
       {/* Only this scrolls */}
       <main className="flex-1 overflow-y-auto">
-        <Suspense fallback={<Loader />}>
+        
           <Outlet />
-        </Suspense>
+      
       </main>
 
     </div>
