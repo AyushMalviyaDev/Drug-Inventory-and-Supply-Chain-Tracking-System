@@ -1,0 +1,96 @@
+import React from "react";
+import { motion } from "framer-motion";
+
+const container = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.2,
+    },
+  },
+};
+
+const fadeLeft = {
+  hidden: { opacity: 0, x: -60 },
+  show: { opacity: 1, x: 0, transition: { duration: 0.6 } },
+};
+
+const fadeRight = {
+  hidden: { opacity: 0, x: 60 },
+  show: { opacity: 1, x: 0, transition: { duration: 0.6 } },
+};
+
+export default function About() {
+  return (
+    <div className="w-full bg-white py-20 px-6 md:px-20 overflow-hidden">
+      <motion.div
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="grid md:grid-cols-2 gap-12 items-center"
+      >
+        {/* LEFT CONTENT */}
+        <motion.div variants={fadeLeft}>
+          <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 leading-tight mb-6">
+            Your pharma platform — <br /> Built for Healthcare & Supply Intelligence
+          </h1>
+
+          <div className="border-l-2 border-orange-400 pl-4 mb-6">
+            <h3 className="font-semibold text-gray-800">
+             Built for Healthcare & Supply Intelligenc
+            </h3>
+            <p className="text-sm text-gray-600 mt-2">
+              Drug Supply & Demand Intelligence
+            </p>
+
+            <div className="mt-3 space-y-1 text-blue-600 text-sm font-medium cursor-pointer">
+              <p>Supply Chain Insights →</p>
+              <p>Demand Tracker →</p>
+              <p>Distributor Network →</p>
+            </div>
+          </div>
+
+          <div className="text-sm text-gray-500 space-y-1 mb-6">
+            <p>Inventory & Stock Management</p>
+            <p>Healthcare Network Integration</p>
+            <p>Order & Distribution Management</p>
+            <p>Analytics & Reporting</p>
+            <p>Smart Dashboard</p>
+            <p>AI-Powered Demand Forecasting</p>
+          </div>
+
+          <button className="px-5 py-2 border border-gray-400 text-sm font-medium hover:bg-black hover:text-white transition">
+            Learn More →
+          </button>
+        </motion.div>
+
+        {/* RIGHT CONTENT */}
+        <motion.div
+          variants={fadeRight}
+          className="relative flex justify-center"
+        >
+          <div className="rounded-xl overflow-hidden shadow-xl bg-gradient-to-r from-purple-500 to-blue-500 p-4">
+            
+            {/* IMAGE (replace with video if needed) */}
+            <img
+              src="/image.png"
+              alt="dashboard"
+              className="rounded-lg w-full h-full object-cover"
+            />
+
+            {/* If you want VIDEO instead, use this 👇 */}
+            {/* 
+            <video
+              src="/video.mp4"
+              autoPlay
+              loop
+              muted
+              className="rounded-lg w-full h-full object-cover"
+            />
+            */}
+          </div>
+        </motion.div>
+      </motion.div>
+    </div>
+  );
+}

@@ -1,124 +1,264 @@
-import React from "react";
-
-const inventory = [
-  {
-    product: "Paracetamol 500mg",
-    category: "Tablet",
-    stock: 520,
-    price: "₹35",
-    status: "In Stock",
-  },
-  {
-    product: "Cough Syrup",
-    category: "Syrup",
-    stock: 48,
-    price: "₹120",
-    status: "Low Stock",
-  },
-  {
-    product: "Vitamin D Capsules",
-    category: "Capsule",
-    stock: 0,
-    price: "₹250",
-    status: "Out of Stock",
-  },
-];
+import React, { useEffect, useState } from "react";
+import { api } from "../api";
 
 export default function Inventory() {
+  const [categories, setCategories] = useState([]);
+  const [drugs, setDrugs] = useState([]);
+
+  const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+  const [drugName, setDrugName] = useState("");
+  const [editingDrug, setEditingDrug] = useState(null);
+
+  // ✅ Fetch Categories
+  const fetchCategories = async () => {
+    const res = await api.get("inventory/categories/");
+    setCategories(res.data);
+  };
+
+  // ✅ Fetch Drugs
+  const fetchDrugs = async () => {
+    const res = await api.get("inventory/drugs/");
+    setDrugs(res.data);
+  };
+
+  useEffect(() => {
+    fetchCategories();
+    fetchDrugs();
+  }, []);
+
+ const [form, setForm] = useState({
+  name: "",
+  manufacturer: "",
+  batch_number: "",
+  quantity: "",
+  price: "",
+  expiry_date: "",
+  manufacture_date: "",
+  category: "",
+});
+
+const handleChange = (e) => {
+  setForm({ ...form, [e.target.name]: e.target.value });
+};
+
+const handleSubmit = async () => {
+  try {
+    await api.post("inventory/drugs/", form);
+    alert("Drug Added ✅");
+
+    setForm({
+      name: "",
+      manufacturer: "",
+      batch_number: "",
+      quantity: "",
+      price: "",
+      expiry_date: "",
+      manufacture_date: "",
+      category: "",
+    });
+
+    fetchDrugs();
+  } catch (err) {
+    console.error(err);
+    alert("Error adding drug ❌");
+  }
+};
+
+  // ✅ Delete Drug
+  const deleteDrug = async (id) => {
+    await api.delete(`inventory/drugs/${id}/`);
+    fetchDrugs();
+  };
+
+  // ✅ Update Drug
+  const updateDrug = async () => {
+    await api.put(`inventory/drugs/${editingDrug.id}/`, editingDrug);
+    setEditingDrug(null);
+    fetchDrugs();
+  };
+
+  // ✅ Search + Filter Logic
+  const filteredDrugs = drugs.filter((drug) => {
+    const matchesSearch = drug.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const matchesCategory = selectedCategory
+      ? drug.category === Number(selectedCategory)
+      : true;
+
+    return matchesSearch && matchesCategory;
+  });
+
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-[#111827] p-6">
-      
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold">Inventory</h1>
-          <p className="text-[#6B7280] text-sm">
-            Manage product stock and availability
-          </p>
-        </div>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <h1 className="text-2xl font-bold mb-6">Pharma Inventory</h1>
 
-        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-          + Add Product 
-        </button>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-[#FFFFFF] border border-[#E5E7EB] p-6 rounded-xl">
-          <h3 className="text-[#6B7280] text-sm">Total Products</h3>
-          <p className="text-2xl font-semibold mt-2">124</p>
-        </div>
-
-        <div className="bg-[#FFFFFF] border border-[#E5E7EB] p-6 rounded-xl">
-          <h3 className="text-[#6B7280] text-sm">Low Stock Items</h3>
-          <p className="text-2xl font-semibold mt-2">18</p>
-        </div>
-
-        <div className="bg-[#FFFFFF] border border-[#E5E7EB] p-6 rounded-xl">
-          <h3 className="text-[#6B7280] text-sm">Out of Stock</h3>
-          <p className="text-2xl font-semibold mt-2">6</p>
-        </div>
-      </div>
-
-      {/* Search + Filter */}
-      <div className="bg-[#FFFFFF] p-4 rounded-xl border border-[#E5E7EB] mb-6 flex flex-wrap gap-4 items-center justify-between">
+      {/* 🔍 Search + Filter */}
+      <div className="flex flex-col md:flex-row gap-3 mb-6">
         <input
           type="text"
-          placeholder="Search product..."
-          className="bg-[#F8FAFC] text-[#111827] placeholder-[#6B7280] px-4 py-2 rounded-lg w-full md:w-1/3 outline-none border border-[#E5E7EB]"
+          placeholder="Search drugs..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="border p-2 rounded w-full"
         />
 
-        <select className="bg-[#F8FAFC] text-[#6B7280] px-3 py-2 rounded-lg border border-[#E5E7EB]">
-          <option>All Categories</option>
-          <option>Tablet</option>
-          <option>Syrup</option>
-          <option>Capsule</option>
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="border p-2 rounded"
+        >
+          <option value="">All Categories</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
         </select>
       </div>
 
-      {/* Inventory Table */}
-      <div className="bg-[#FFFFFF] rounded-xl border border-[#E5E7EB] overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-[#F1F5F9] text-[#6B7280] uppercase text-xs">
-            <tr>
-              <th className="px-6 py-4 text-left">Product</th>
-              <th className="px-6 py-4 text-left">Category</th>
-              <th className="px-6 py-4 text-left">Stock</th>
-              <th className="px-6 py-4 text-left">Price</th>
-              <th className="px-6 py-4 text-left">Status</th>
-            </tr>
-          </thead>
+      {/* ➕ Add Drug */}
+     <div className="bg-white p-6 rounded-xl shadow mb-6">
 
-          <tbody>
-            {inventory.map((item, index) => (
-              <tr
-                key={index}
-                className="border-t border-[#E5E7EB] hover:bg-[#F9FAFB] transition"
-              >
-                <td className="px-6 py-4 font-medium">{item.product}</td>
-                <td className="px-6 py-4 text-[#6B7280]">
-                  {item.category}
-                </td>
-                <td className="px-6 py-4">{item.stock}</td>
-                <td className="px-6 py-4">{item.price}</td>
-                <td className="px-6 py-4">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      item.status === "In Stock"
-                        ? "bg-green-100 text-green-600"
-                        : item.status === "Low Stock"
-                        ? "bg-yellow-100 text-yellow-600"
-                        : "bg-red-100 text-red-600"
-                    }`}
-                  >
-                    {item.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+  <h2 className="text-lg font-semibold mb-4">Add Drug</h2>
+
+  <div className="grid md:grid-cols-4 gap-3">
+
+    <input name="name" value={form.name} onChange={handleChange} placeholder="Drug Name" className="border p-2 rounded" />
+
+    <input name="manufacturer" value={form.manufacturer} onChange={handleChange} placeholder="Manufacturer" className="border p-2 rounded" />
+
+    <input name="batch_number" value={form.batch_number} onChange={handleChange} placeholder="Batch No" className="border p-2 rounded" />
+
+    <input name="quantity" type="number" value={form.quantity} onChange={handleChange} placeholder="Quantity" className="border p-2 rounded" />
+
+    <input name="price" type="number" value={form.price} onChange={handleChange} placeholder="Price" className="border p-2 rounded" />
+
+    <input name="manufacture_date" type="date" value={form.manufacture_date} onChange={handleChange} className="border p-2 rounded" />
+
+    <input name="expiry_date" type="date" value={form.expiry_date} onChange={handleChange} className="border p-2 rounded" />
+
+    <select name="category" value={form.category} onChange={handleChange} className="border p-2 rounded">
+      <option value="">Category</option>
+      {categories.map((c) => (
+        <option key={c.id} value={c.id}>
+          {c.name}
+        </option>
+      ))}
+    </select>
+
+  </div>
+
+  <button
+    onClick={handleSubmit}
+    className="mt-4 bg-indigo-600 text-white px-4 py-2 rounded"
+  >
+    Add Drug
+  </button>
+
+</div>
+
+      {/* 💊 Drugs Grid */}
+      <div className="bg-white rounded-xl shadow overflow-x-auto">
+  <table className="w-full text-sm text-left">
+
+    {/* Header */}
+    <thead className="bg-gray-100 text-gray-600">
+      <tr>
+        <th className="p-3">#</th>
+        <th className="p-3">Drug Name</th>
+        <th className="p-3">ID</th>
+        <th className="p-3">Category</th>
+        <th className="p-3">Quantity</th>
+        <th className="p-3">Expiry</th>
+        <th className="p-3">Actions</th>
+      </tr>
+    </thead>
+
+    {/* Body */}
+    <tbody>
+      {filteredDrugs.map((drug, index) => (
+        <tr key={drug.id} className="border-t hover:bg-gray-50">
+
+          <td className="p-3">{index + 1}</td>
+
+          <td className="p-3 font-medium">{drug.name}</td>
+
+          <td className="p-3">#{drug.id}</td>
+
+          <td className="p-3">
+            {categories.find((c) => c.id === drug.category)?.name}
+          </td>
+
+          <td className="p-3">
+            {drug.quantity || "—"}
+          </td>
+
+          <td className="p-3">
+            <span className="text-gray-600">
+              {drug.expiry_date || "N/A"}
+            </span>
+          </td>
+
+          <td className="p-3 flex gap-2">
+            <button
+              onClick={() => setEditingDrug(drug)}
+              className="text-blue-500"
+            >
+              Edit
+            </button>
+
+            <button
+              onClick={() => deleteDrug(drug.id)}
+              className="text-red-500"
+            >
+              Delete
+            </button>
+          </td>
+
+        </tr>
+      ))}
+    </tbody>
+
+  </table>
+</div>
+
+      {/* ✏️ Edit Modal */}
+      {editingDrug && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-xl w-96">
+            <h2 className="font-bold mb-4">Edit Drug</h2>
+
+            <input
+              value={editingDrug.name}
+              onChange={(e) =>
+                setEditingDrug({
+                  ...editingDrug,
+                  name: e.target.value,
+                })
+              }
+              className="border p-2 w-full mb-3"
+            />
+
+            <button
+              onClick={updateDrug}
+              className="bg-indigo-600 text-white px-4 py-2 rounded"
+            >
+              Save
+            </button>
+
+            <button
+              onClick={() => setEditingDrug(null)}
+              className="ml-2 text-gray-500"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
-} 
+}
