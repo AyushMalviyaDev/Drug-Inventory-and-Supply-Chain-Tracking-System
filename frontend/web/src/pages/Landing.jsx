@@ -15,13 +15,7 @@ export default function Landing() {
     <div className="overflow-hidden">
       <Navbar />
       <Hero />
-      <WatchDemo />
-      <About />
-      <AIFeatures />
-      <BackgroundVideo />
-      <Stats />
-      <Testimonials />
-      <Footer />
+      
     </div>
   );
 }

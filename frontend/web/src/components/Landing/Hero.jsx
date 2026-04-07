@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const container = {
   hidden: {},
@@ -47,13 +48,13 @@ export default function Hero() {
           variants={fadeUp}
           className="flex gap-4 mt-8"
         >
-          <button className="bg-black hover:bg-white hover:text-black cursor-pointer px-6 py-3 rounded-md font-semibold">
+          <Link to="/register" className="bg-black hover:bg-white hover:text-black cursor-pointer px-6 py-3 rounded-md font-semibold">
             Sign up for PharmaLink
-          </button>
+          </Link>
 
-          <button className="border px-6 py-3 rounded-md font-semibold hover:bg-white hover:text-black transition">
+          <Link to="/login" className="border px-6 py-3 rounded-md font-semibold hover:bg-white hover:text-black transition">
             Start for Free
-          </button>
+          </Link>
         </motion.div>
 
         {/* Small info 
