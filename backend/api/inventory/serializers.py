@@ -1,16 +1,9 @@
 # inventory/serializers.py
 from rest_framework import serializers
-from .models import Drug, Category
-
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = "__all__"
-        read_only_fields = ["user"]
-
+from .models import Drug
 
 class DrugSerializer(serializers.ModelSerializer):
     class Meta:
         model = Drug
         fields = "__all__"
-        read_only_fields = ["user"]
+        read_only_fields = ["user", "manufacturer", "created_at"] 

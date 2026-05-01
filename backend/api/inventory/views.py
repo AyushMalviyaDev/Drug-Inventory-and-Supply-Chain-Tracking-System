@@ -1,25 +1,22 @@
 # inventory/views.py
-from rest_framework import viewsets, permissions
-from .models import Drug, Category
-from .serializers import DrugSerializer, CategorySerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Drug
+from .serializers import DrugSerializer
+from .permissions import IsManufacturer
 
-class CategoryViewSet(viewsets.ModelViewSet):
-    serializer_class = CategorySerializer
-    permission_classes = [permissions.IsAuthenticated]
+class CreateDrugView(APIView):
+    permission_classes = [IsManufacturer]
 
-    def get_queryset(self):
-        return Category.objects.filter(user=self.request.user)
+    def post(self, request):
+        serializer = DrugSerializer(data=request.data)
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        if serializer.is_valid():
+            serializer.save(
+                user=request.user,
+                manufacturer=request.user
+            )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-
-class DrugViewSet(viewsets.ModelViewSet):
-    serializer_class = DrugSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        return Drug.objects.filter(user=self.request.user)
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

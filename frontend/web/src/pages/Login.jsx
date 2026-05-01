@@ -8,7 +8,7 @@ export default function Login() {
 
   const [form, setForm] = useState({
     email: "",
-    password: ""
+    password: "",
   });
 
   const [error, setError] = useState("");
@@ -17,7 +17,7 @@ export default function Login() {
   const handleChange = (e) => {
     setForm({
       ...form,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -37,10 +37,11 @@ export default function Login() {
         localStorage.setItem("refresh", res.data.tokens.refresh);
         navigate("/dashboard");
       }
-
     } catch (err) {
       if (err.response && err.response.status === 403) {
-        setError(err.response.data.error || "Please verify your email first");
+        setError(
+          err.response.data.error || "Please verify your email first"
+        );
         navigate("/verify", { state: { email: form.email } });
       } else {
         setError("Invalid email or password");
@@ -52,15 +53,17 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-sm p-8"
       >
+
         {/* Heading */}
         <div className="text-center mb-6">
-          <h2 className="text-2xl font-semibold text-gray-900">
+          <h2 className="text-2xl font-semibold text-black">
             Welcome back
           </h2>
           <p className="text-sm text-gray-500 mt-1">
@@ -68,60 +71,67 @@ export default function Login() {
           </p>
         </div>
 
+        {/* Error */}
         {error && (
-          <p className="text-red-500 text-sm mb-4 text-center">{error}</p>
+          <p className="text-red-500 text-sm mb-4 text-center">
+            {error}
+          </p>
         )}
 
+        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={form.email}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
 
-          <div>
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={form.password}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black"
+          />
 
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black"
+          />
+
+          {/* Options */}
           <div className="flex items-center justify-between text-sm">
             <label className="flex items-center gap-2 text-gray-600">
-              <input type="checkbox" /> Remember me
+              <input type="checkbox" />
+              Remember me
             </label>
-            <span className="text-indigo-600 cursor-pointer hover:underline">
+
+            <span className="text-black cursor-pointer hover:underline">
               Forgot password?
             </span>
           </div>
 
+          {/* Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-medium hover:bg-indigo-700 transition disabled:opacity-50"
+            className="w-full bg-black text-white py-2.5 rounded-xl font-medium hover:bg-gray-800 transition disabled:opacity-50"
           >
             {loading ? "Logging in..." : "Sign in"}
           </button>
         </form>
 
+        {/* Footer */}
         <p className="text-sm text-gray-500 text-center mt-6">
           Don’t have an account?{" "}
           <span
             onClick={() => navigate("/register")}
-            className="text-indigo-600 font-medium cursor-pointer hover:underline"
+            className="text-black font-medium cursor-pointer hover:underline"
           >
             Sign up
           </span>
         </p>
+
       </motion.div>
     </div>
   );

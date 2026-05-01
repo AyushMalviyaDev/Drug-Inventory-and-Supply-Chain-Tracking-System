@@ -5,51 +5,59 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 #creating custom user manager
 class UserManager(BaseUserManager):
-  def create_user(self, email, name, tc, password=None, password2=None):
-      """
-      Creates and saves a User with the given email, name, tc and password.
-      """
-      if not email:
-          raise ValueError('User must have an email address')
+  def create_user(self, email, name, tc, role, password=None):
+    if not email:
+        raise ValueError('User must have an email address')
 
-      user = self.model(
-          email=self.normalize_email(email),
-          name=name,
-          tc=tc,
-      )
+    user = self.model(
+        email=self.normalize_email(email),
+        name=name,
+        tc=tc,
+        role=role,
+    )
 
-      user.set_password(password)
-      user.save(using=self._db)
-      return user
+    user.set_password(password)
+    user.save(using=self._db)
+    return user
 
-  def create_superuser(self, email, name, tc, password=None):
-      """
-      Creates and saves a superuser with the given email, name, tc and password.
-      """
-      user = self.create_user(
-          email,
-          password=password,
-          name=name,
-          tc=tc,
-      )
-      user.is_admin = True
-      user.save(using=self._db)
-      return user
+  def create_superuser(self, email, name, tc, role='manufacturer', password=None):
+    user = self.create_user(
+        email=email,
+        name=name,
+        tc=tc,
+        role=role,
+        password=password,
+    )
+    user.is_admin = True
+    user.save(using=self._db)
+    return user
 
 #creating custom user model
 class User(AbstractBaseUser):
+
+    ROLE_CHOICES = (
+        ('manufacturer', 'Manufacturer'),
+        ('distributor', 'Distributor'),
+        ('transporter', 'Transporter'),
+        ('pharmacist', 'Pharmacist'),
+    )
+
     email = models.EmailField(
         verbose_name="Email",
         max_length=255,
         unique=True,
     )
     name = models.CharField(max_length=255)
-    tc = models.BooleanField()
+    tc = models.BooleanField(verbose_name="Terms and Conditions")
+
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    #for email verification 
+
     email_otp = models.CharField(max_length=6, null=True, blank=True)
     otp_created_at = models.DateTimeField(null=True, blank=True)
     is_verified = models.BooleanField(default=False)
@@ -57,7 +65,7 @@ class User(AbstractBaseUser):
     objects = UserManager()
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["name", "tc"]
+    REQUIRED_FIELDS = ["name", "tc", "role"]
 
     def __str__(self):
         return self.email

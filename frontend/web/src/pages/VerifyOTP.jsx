@@ -13,7 +13,6 @@ export default function VerifyOTP() {
   const inputs = useRef([]);
   const [error, setError] = useState("");
 
-  // 🔢 Handle input change
   const handleChange = (value, index) => {
     if (!/^[0-9]?$/.test(value)) return;
 
@@ -21,35 +20,25 @@ export default function VerifyOTP() {
     newOtp[index] = value;
     setOtp(newOtp);
 
-    // Move to next box
     if (value && index < 5) {
       inputs.current[index + 1].focus();
     }
   };
 
-  // ⬅️ Handle backspace
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputs.current[index - 1].focus();
     }
   };
 
-  // 📋 Handle paste
   const handlePaste = (e) => {
     const paste = e.clipboardData.getData("text").slice(0, 6);
     if (!/^\d+$/.test(paste)) return;
 
     const newOtp = paste.split("");
     setOtp([...newOtp, ...Array(6 - newOtp.length).fill("")]);
-
-    newOtp.forEach((val, i) => {
-      if (inputs.current[i]) {
-        inputs.current[i].value = val;
-      }
-    });
   };
 
-  
   const handleVerify = async (e) => {
     e.preventDefault();
     setError("");
@@ -64,17 +53,18 @@ export default function VerifyOTP() {
 
       alert("Email verified successfully");
       navigate("/login");
-
     } catch (err) {
       setError(err.response?.data?.error || "Invalid OTP");
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white border border-[#E5E7EB] rounded-2xl shadow-sm p-8">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
 
-        <h2 className="text-2xl font-bold text-center mb-4 text-[#111827]">
+      <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-sm p-8">
+
+        {/* Header */}
+        <h2 className="text-2xl font-semibold text-center text-black mb-3">
           Verify OTP
         </h2>
 
@@ -83,6 +73,7 @@ export default function VerifyOTP() {
           <span className="font-medium text-black">{email}</span>
         </p>
 
+        {/* Error */}
         {error && (
           <p className="text-red-500 text-sm text-center mb-4">
             {error}
@@ -91,7 +82,7 @@ export default function VerifyOTP() {
 
         <form onSubmit={handleVerify}>
 
-          {/* 🔥 OTP Boxes */}
+          {/* OTP Inputs */}
           <div
             className="flex justify-between mb-6"
             onPaste={handlePaste}
@@ -107,22 +98,24 @@ export default function VerifyOTP() {
                   handleChange(e.target.value, index)
                 }
                 onKeyDown={(e) => handleKeyDown(e, index)}
-                className="w-12 h-12 text-center text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-12 h-12 text-center text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
               />
             ))}
           </div>
 
+          {/* Button */}
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-2 rounded-lg font-semibold hover:opacity-90 transition"
+            className="w-full bg-black text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition"
           >
             Verify
           </button>
         </form>
 
+        {/* Resend */}
         <p className="text-sm text-center mt-6 text-gray-500">
           Didn’t receive OTP?{" "}
-          <span className="text-indigo-600 cursor-pointer">
+          <span className="text-black cursor-pointer hover:underline">
             Resend
           </span>
         </p>

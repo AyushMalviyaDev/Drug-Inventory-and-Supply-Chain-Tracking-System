@@ -18,7 +18,7 @@ from .utils import generate_otp, send_otp
 class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'name', 'password', 'tc']
+        fields = ['email', 'name', 'tc', 'role', 'password']        
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -30,7 +30,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             name=validated_data['name'],
             password=validated_data['password'],
-            tc=validated_data['tc']
+            tc=validated_data['tc'],
+            role=validated_data['role']
         )
 
         user.email_otp = otp
@@ -38,8 +39,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user.is_verified = False
         user.save()
 
-
         return user
+
+    
 
 from datetime import timedelta
 

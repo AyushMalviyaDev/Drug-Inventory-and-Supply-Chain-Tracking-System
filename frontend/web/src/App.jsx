@@ -25,7 +25,6 @@ function App() {
       <Route path="/" element={<Landing />} /> 
       <Route path="/register" element={<Register />} /> 
         <Route path="/login" element={<Login/>} />  
-        <Route path="/resetpassword" element={<ResetPassword />} />
         <Route path="/verify" element={<VerifyOTP />} />
       <Route element={<MainLayout />}>
         <Route path="/dashboard" element={<Dashboard />} />

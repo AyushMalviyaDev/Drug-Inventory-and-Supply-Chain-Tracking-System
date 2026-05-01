@@ -1,19 +1,7 @@
 # inventory/models.py
 from django.db import models
-from django.conf import settings   
+from django.conf import settings
 
-
-class Category(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="categories"
-    )
-
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
 class Drug(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -21,16 +9,13 @@ class Drug(models.Model):
         related_name="drugs"
     )
 
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="drugs"
+    manufacturer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="manufactured_drugs"
     )
 
     name = models.CharField(max_length=255)
-    manufacturer = models.CharField(max_length=255)
     batch_number = models.CharField(max_length=100, unique=True)
 
     quantity = models.IntegerField()
@@ -40,3 +25,6 @@ class Drug(models.Model):
     manufacture_date = models.DateField()
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
